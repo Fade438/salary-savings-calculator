@@ -11,7 +11,601 @@
       box-sizing: border-box;
     }
 
+    body {<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Free salary and savings calculator with expense charts, budgeting tips and monthly savings goals.">
+  <meta name="theme-color" content="#0b1120">
+  <title>Salary & Savings | Personal Finance Calculator</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1120;
+      --panel: #131d30;
+      --panel-light: #1b2940;
+      --border: #29374d;
+      --text: #f1f5f9;
+      --muted: #9aabc1;
+      --green: #34d399;
+      --red: #fb7185;
+      --blue: #60a5fa;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    header {
+      padding: 30px 18px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(ellipse at top, #1c3650, var(--bg) 75%);
+    }
+
+    .brand {
+      color: var(--green);
+      font-weight: 800;
+      letter-spacing: 2px;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    header h1 {
+      margin: 8px 0;
+      font-size: clamp(26px, 5vw, 38px);
+      line-height: 1.2;
+    }
+
+    header p, .muted { color: var(--muted); }
+
+    main {
+      width: min(1050px, 100%);
+      margin: 28px auto;
+      padding: 0 16px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      min-width: 0;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      font-size: 19px;
+      margin: 0 0 16px;
+    }
+
+    .field { margin-bottom: 15px; }
+
+    label {
+      display: block;
+      color: #d7e1ef;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      min-width: 0;
+      background: #0b1425;
+      border: 1px solid #34455f;
+      border-radius: 9px;
+      color: var(--text);
+      font: inherit;
+      padding: 11px 12px;
+    }
+
+    input:focus {
+      outline: 2px solid var(--green);
+      outline-offset: 2px;
+    }
+
+    button {
+      font: inherit;
+      font-weight: 700;
+      border: 0;
+      border-radius: 9px;
+      padding: 12px 16px;
+      cursor: pointer;
+    }
+
+    .primary {
+      width: 100%;
+      background: var(--green);
+      color: #062319;
+    }
+
+    .primary:hover { background: #6ee7b7; }
+
+    .secondary {
+      background: var(--panel-light);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .results {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat {
+      padding: 15px;
+      background: var(--panel-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .stat p {
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: clamp(18px, 3vw, 24px);
+      line-height: 1.35;
+    }
+
+    .green { color: var(--green); }
+    .red { color: var(--red); }
+    .blue { color: var(--blue); }
+
+    .chart-wrap {
+      position: relative;
+      width: 100%;
+      height: 250px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    .goal-track {
+      height: 10px;
+      background: #26354a;
+      border-radius: 99px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    #goalBar {
+      height: 100%;
+      width: 0;
+      background: var(--green);
+      border-radius: inherit;
+      transition: width .25s;
+    }
+
+    .tip {
+      padding: 12px;
+      border-radius: 10px;
+      background: var(--panel-light);
+      border-left: 3px solid var(--blue);
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    #message {
+      font-size: 14px;
+      margin: 12px 0 0;
+    }
+
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 25px 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 720px) {
+      .layout { grid-template-columns: 1fr; }
+      main { margin-top: 18px; }
+      .panel { padding: 18px; }
+    }
+
+    @media (max-width: 360px) {
+      .results { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="brand">Personal Finance Tools</div>
+    <h1>Salary & Savings</h1>
+    <p>Know your numbers. Plan your future.</p>
+  </header>
+
+  <main>
+    <div class="layout">
+      <section class="panel">
+        <h2>Your monthly budget</h2>
+
+        <form id="budgetForm">
+          <div class="field">
+            <label for="salary">Monthly income (₹)</label>
+            <input id="salary" type="number" min="0" max="1000000000"
+              step="0.01" value="30000" required>
+          </div>
+
+          <div class="field">
+            <label for="rent">Rent (₹)</label>
+            <input id="rent" type="number" min="0" max="1000000000"
+              step="0.01" value="8000" required>
+          </div>
+
+          <div class="field">
+            <label for="food">Food (₹)</label>
+            <input id="food" type="number" min="0" max="1000000000"
+              step="0.01" value="5000" required>
+          </div>
+
+          <div class="field">
+            <label for="travel">Travel (₹)</label>
+            <input id="travel" type="number" min="0" max="1000000000"
+              step="0.01" value="2000" required>
+          </div>
+
+          <div class="field">
+            <label for="other">Other expenses (₹)</label>
+            <input id="other" type="number" min="0" max="1000000000"
+              step="0.01" value="3000" required>
+          </div>
+
+          <div class="field">
+            <label for="goal">Monthly savings goal (₹)</label>
+            <input id="goal" type="number" min="0" max="1000000000"
+              step="0.01" value="10000" required>
+          </div>
+
+          <button class="primary" type="submit">Calculate my budget</button>
+          <p id="message" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Your financial summary</h2>
+        <div class="results">
+          <div class="stat">
+            <p>Total expenses</p>
+            <strong id="expenses">₹18,000</strong>
+          </div>
+          <div class="stat">
+            <p>Monthly savings</p>
+            <strong id="monthly" class="green">₹12,000</strong>
+          </div>
+          <div class="stat">
+            <p>Estimated yearly savings</p>
+            <strong id="yearly">₹1,44,000</strong>
+          </div>
+          <div class="stat">
+            <p>Savings rate</p>
+            <strong id="percentage">40%</strong>
+          </div>
+        </div>
+        <p class="note">
+          Yearly savings assume the same monthly income and expenses
+          for 12 months.
+        </p>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2>Income vs expenses vs savings</h2>
+      <div class="chart-wrap">
+        <canvas id="budgetChart"
+          role="img"
+          aria-label="Bar chart comparing monthly income, expenses and savings">
+          Income, expenses and savings comparison.
+        </canvas>
+      </div>
+      <div class="legend">
+        <span><i class="dot" style="background:#60a5fa"></i>Income</span>
+        <span><i class="dot" style="background:#fb7185"></i>Expenses</span>
+        <span><i class="dot" style="background:#34d399"></i>Positive savings</span>
+      </div>
+      <p class="note">The chart updates when you recalculate your budget.</p>
+    </section>
+
+    <div class="layout">
+      <section class="panel">
+        <h2>Monthly savings goal</h2>
+        <div class="stat">
+          <p>Your goal</p>
+          <strong id="goalText">₹10,000</strong>
+          <p id="goalStatus" aria-live="polite">Calculating progress...</p>
+          <div class="goal-track">
+            <div id="goalBar"></div>
+          </div>
+          <strong id="goalPercent" class="green">0%</strong>
+        </div>
+        <p class="note">
+          Progress is based on this month's estimated savings, not money
+          actually deposited into an account.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Budget insights</h2>
+        <div id="tips" aria-live="polite">
+          Enter your budget to receive tips.
+        </div>
+      </section>
+    </div>
+
+    <p class="note">
+      Your entries stay in this browser page and are not sent to a server.
+      Avoid entering sensitive financial information.
+    </p>
+  </main>
+
+  <footer>
+    Salary & Savings Calculator · Free budgeting tool · Estimates only
+  </footer>
+
+  <script>
+    const form = document.getElementById("budgetForm");
+
+    const fields = ["salary", "rent", "food", "travel", "other", "goal"];
+
+    const money = value => new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 2
+    }).format(value);
+
+    function showMessage(text, isError = false) {
+      const message = document.getElementById("message");
+      message.textContent = text;
+      message.className = isError ? "red" : "green";
+    }
+
+    function drawChart(income, expenses, savings) {
+      const canvas = document.getElementById("budgetChart");
+      const ctx = canvas.getContext("2d");
+      const rect = canvas.getBoundingClientRect();
+
+      if (!rect.width || !rect.height) return;
+
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(rect.width * ratio);
+      canvas.height = Math.round(rect.height * ratio);
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+      const width = rect.width;
+      const height = rect.height;
+      ctx.clearRect(0, 0, width, height);
+
+      const positiveSavings = Math.max(0, savings);
+      const values = [income, expenses, positiveSavings];
+      const labels = ["Income", "Expenses", "Savings"];
+      const colors = ["#60a5fa", "#fb7185", "#34d399"];
+      const maxValue = Math.max(...values, 1);
+      const left = 12;
+      const right = 12;
+      const top = 20;
+      const bottom = 48;
+      const usableHeight = height - top - bottom;
+      const slot = (width - left - right) / 3;
+      const barWidth = Math.min(58, slot * 0.55);
+
+      ctx.font = "12px system-ui";
+      ctx.textAlign = "center";
+
+      for (let i = 0; i < 3; i++) {
+        const barHeight = values[i] / maxValue * usableHeight;
+        const x = left + slot * i + (slot - barWidth) / 2;
+        const y = top + usableHeight - barHeight;
+
+        ctx.fillStyle = colors[i];
+        ctx.beginPath();
+        ctx.roundRect(x, y, barWidth, Math.max(barHeight, 2), 6);
+        ctx.fill();
+
+        ctx.fillStyle = "#f1f5f9";
+        const valueLabel = values[i] >= 100000
+          ? "₹" + (values[i] / 100000).toFixed(1) + "L"
+          : values[i] >= 1000
+            ? "₹" + (values[i] / 1000).toFixed(1) + "k"
+            : "₹" + values[i].toFixed(0);
+
+        ctx.fillText(valueLabel, x + barWidth / 2, Math.max(13, y - 7));
+
+        ctx.fillStyle = "#9aabc1";
+        ctx.fillText(labels[i], x + barWidth / 2, height - 20);
+      }
+
+      if (savings < 0) {
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#fb7185";
+        ctx.fillText("Expenses exceed income", width / 2, height - 2);
+      }
+    }
+
+    function updateTips(income, expenses, savings, goal) {
+      const container = document.getElementById("tips");
+      container.replaceChildren();
+
+      const tips = [];
+      const expenseRate = income > 0 ? expenses / income : null;
+
+      if (income === 0) {
+        tips.push("Enter a positive income to receive more meaningful budget insights.");
+      } else {
+        if (savings < 0) {
+          tips.push("Your expenses exceed your income. Review optional expenses and essential bills before setting a savings target.");
+        } else if (savings === 0) {
+          tips.push("Your entire income is allocated. Review your spending and consider a small, realistic savings goal if possible.");
+        } else {
+          tips.push("You have a positive estimated balance of " + money(savings) + " per month.");
+        }
+
+        if (expenseRate > 0.8) {
+          tips.push("Expenses are above 80% of income. Check whether any flexible spending can be adjusted.");
+        } else if (expenseRate <= 0.5) {
+          tips.push("Your expenses are at or below 50% of income. Check that essential needs and upcoming bills are covered.");
+        } else {
+          tips.push("Review your expense categories to see whether your current budget fits your needs.");
+        }
+      }
+
+      if (goal > 0 && savings >= goal) {
+        tips.push("Your estimated savings meet or exceed your monthly goal. Check your actual spending before treating the goal as achieved.");
+      } else if (goal > 0 && savings > 0) {
+        tips.push("You are " + money(goal - savings) + " short of your monthly goal based on these estimates. Adjust the goal if it is not realistic.");
+      } else if (goal === 0) {
+        tips.push("Set a monthly savings goal above zero if you want to track progress.");
+      }
+
+      for (const tip of tips) {
+        const item = document.createElement("div");
+        item.className = "tip";
+        item.textContent = tip;
+        container.appendChild(item);
+      }
+    }
+
+    function calculate() {
+      const values = {};
+
+      for (const id of fields) {
+        const input = document.getElementById(id);
+        const value = input.valueAsNumber;
+
+        if (
+          input.value.trim() === "" ||
+          !Number.isFinite(value) ||
+          value < 0 ||
+          value > 1000000000
+        ) {
+          showMessage("Please enter valid amounts from ₹0 to ₹1,000,000,000.", true);
+          input.focus();
+          return;
+        }
+
+        values[id] = value;
+      }
+
+      const income = values.salary;
+      const expenses =
+        values.rent + values.food + values.travel + values.other;
+      const savings = income - expenses;
+      const yearly = savings * 12;
+      const rate = income > 0 ? savings / income * 100 : null;
+      const goal = values.goal;
+
+      document.getElementById("expenses").textContent = money(expenses);
+
+      const monthlyElement = document.getElementById("monthly");
+      monthlyElement.textContent = money(savings);
+      monthlyElement.className = savings < 0 ? "red" : "green";
+
+      document.getElementById("yearly").textContent = money(yearly);
+      document.getElementById("percentage").textContent =
+        rate === null ? "N/A" : rate.toFixed(1) + "%";
+
+      document.getElementById("goalText").textContent = money(goal);
+
+      const progress = goal > 0 ? savings / goal * 100 : 0;
+      const progressWidth = Math.max(0, Math.min(100, progress));
+
+      document.getElementById("goalBar").style.width = progressWidth + "%";
+      document.getElementById("goalPercent").textContent =
+        goal === 0 ? "No goal set" : Math.max(0, progress).toFixed(1) + "%";
+
+      let goalStatus;
+      if (goal === 0) {
+        goalStatus = "Enter a goal above zero to track progress.";
+      } else if (savings < 0) {
+        goalStatus = "Expenses exceed income. Review your budget first.";
+      } else if (savings >= goal) {
+        goalStatus = "Your estimated savings meet your goal!";
+      } else {
+        goalStatus = money(goal - savings) + " more needed to reach your goal.";
+      }
+
+      document.getElementById("goalStatus").textContent = goalStatus;
+
+      drawChart(income, expenses, savings);
+      updateTips(income, expenses, savings, goal);
+
+      if (savings < 0) {
+        showMessage("Calculation complete. Expenses exceed income.");
+      } else {
+        showMessage("Your budget has been updated.");
+      }
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      calculate();
+    });
+
+    window.addEventListener("resize", () => {
+      const income = document.getElementById("salary").valueAsNumber;
+      const expenses = ["rent", "food", "travel", "other"]
+        .reduce((sum, id) => sum + document.getElementById(id).valueAsNumber, 0);
+      drawChart(income, expenses, income - expenses);
+    });
+
+    calculate();
+  </script>
+</body>
+</html>
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f4f7f5;
